@@ -19,6 +19,8 @@ def get_all_leaderboard_maps(
     since: datetime = datetime(2007, 1, 1, tzinfo=timezone.utc),
     upto: datetime = datetime.now(timezone.utc) + timedelta(days=1),
 ) -> list[BeatmapV1]:
+    """Retrieves all maps approved between `since` and `upto` (UTC)"""
+
     maps: list[BeatmapV1] = []
     map_id_set: set[int] = set()
 
