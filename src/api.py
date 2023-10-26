@@ -8,7 +8,6 @@ from ossapi.ossapi import Beatmap as BeatmapV1
 
 
 load_dotenv(".env")
-API_URL: Final[str] = "https://osu.ppy.sh/api/"
 API_LEGACY_KEY: Final[str] = os.environ.get("LEGACY_OSU_API_KEY")
 API_CLIENT_ID: Final[int] = int(os.environ.get("CLIENT_ID"))
 API_CLIENT_SECRET: Final[str] = os.environ.get("CLIENT_SECRET")
