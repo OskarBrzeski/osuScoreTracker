@@ -37,3 +37,19 @@ def get_all_leaderboard_maps(
         since = maps[-1].approved_date - timedelta(seconds=1)
 
     return maps
+
+
+def beatmapv1_into_table_record(beatmap: BeatmapV1) -> tuple:
+    """Convert `Beatmap` object into record for sqlite table"""
+    return (
+        beatmap.beatmap_id,
+        beatmap.beatmapset_id,
+        int(beatmap.approved_date.timestamp()),
+        beatmap.artist,
+        beatmap.title,
+        beatmap.version,
+        beatmap.creator,
+        beatmap.creator_id,
+        beatmap.star_rating,
+        int(beatmap.total_length),
+    )

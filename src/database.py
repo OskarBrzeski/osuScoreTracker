@@ -34,7 +34,6 @@ def create_map_table(cursor: sql.Cursor) -> None:
             diff_name TEXT,
             mapper TEXT, 
             mapper_id INTEGER,
-            game_mode INTEGER,
             diff_rating REAL,
             length INTEGER
         );
@@ -48,5 +47,28 @@ def delete_map_table(cursor: sql.Cursor) -> None:
     cursor.execute(
         """
         DROP TABLE IF EXISTS maps;
+        """
+    )
+
+
+@auto_connection
+def add_map(cursor: sql.Cursor, values: tuple) -> None:
+    """Add map details to table `maps`"""
+    cursor.execute(
+        """
+        INSERT INTO maps VALUES (
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        )
+        """,
+        values,
+    )
+
+
+@auto_connection
+def remove_all_maps(cursor: sql.Cursor) -> None:
+    """Remove all maps from table `maps`"""
+    cursor.execute(
+        """
+        DELETE FROM maps;
         """
     )
