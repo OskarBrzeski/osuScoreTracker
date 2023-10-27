@@ -1,5 +1,7 @@
 import sqlite3 as sql
 
+from ossapi.ossapi import Beatmap as BeatmapV1
+
 
 def auto_connection(func):
     """Decorator for automating the connection to the database."""
@@ -23,7 +25,7 @@ def auto_connection(func):
 @auto_connection
 def create_map_table(cursor: sql.Cursor) -> None:
     """Create the table `maps` with all the relevant columns.
-    
+
     Changes should also be made to src.api.beatmapv1_into_table_record()"""
     cursor.execute(
         """
@@ -73,4 +75,26 @@ def remove_all_maps(cursor: sql.Cursor) -> None:
         """
         DELETE FROM maps;
         """
+    )
+
+
+def fill_map_table(maps: list[BeatmapV1]) -> None:
+    """Add beatmap data to table `maps`"""
+    for m in maps:
+        add_map(_beatmapv1_into_table_record(m))
+
+
+def _beatmapv1_into_table_record(beatmap: BeatmapV1) -> tuple:
+    """Convert `Beatmap` object into record for sqlite table"""
+    return (
+        beatmap.beatmap_id,
+        beatmap.beatmapset_id,
+        int(beatmap.approved_date.timestamp()),
+        beatmap.artist,
+        beatmap.title,
+        beatmap.version,
+        beatmap.creator,
+        beatmap.creator_id,
+        beatmap.star_rating,
+        int(beatmap.total_length),
     )
