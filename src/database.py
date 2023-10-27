@@ -22,7 +22,9 @@ def auto_connection(func):
 
 @auto_connection
 def create_map_table(cursor: sql.Cursor) -> None:
-    """Create the table `maps` with all the relevant columns."""
+    """Create the table `maps` with all the relevant columns.
+    
+    Changes should also be made to src.api.beatmapv1_into_table_record()"""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS maps (
@@ -58,7 +60,7 @@ def add_map(cursor: sql.Cursor, values: tuple) -> None:
         """
         INSERT INTO maps VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-        )
+        );
         """,
         values,
     )
