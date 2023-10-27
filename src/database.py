@@ -104,7 +104,7 @@ def fill_map_table(maps: list[BeatmapV1]) -> None:
 @auto_connection
 def create_score_table(cursor: sql.Cursor):
     """Create the table `scores` with all the relevant columns.
-    
+
     Changes should also be made to _score_into_table_record()"""
     cursor.execute(
         """
@@ -127,7 +127,7 @@ def _score_into_table_record(score: Score | tuple[int, int]) -> tuple:
     """Convert `Score` object into record for sqlite table"""
     if isinstance(score, tuple):
         return (0, score[0], score[1], 0, 0.0, 0, 0, 0, 0.0)
-    
+
     return (
         score.id,
         score.user_id,
