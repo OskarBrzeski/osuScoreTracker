@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Final
 
 from dotenv import load_dotenv
-from ossapi import OssapiV1
+from ossapi import GameMode, Ossapi, OssapiV1, Score
 from ossapi.ossapi import Beatmap as BeatmapV1
 
 load_dotenv(".env")
@@ -13,6 +13,7 @@ API_CLIENT_SECRET: Final[str] = os.environ.get("CLIENT_SECRET")
 
 
 API_V1 = OssapiV1(API_LEGACY_KEY)
+API = Ossapi(API_CLIENT_ID, API_CLIENT_SECRET)
 
 
 def get_all_leaderboard_maps(
@@ -37,3 +38,7 @@ def get_all_leaderboard_maps(
         since = maps[-1].approved_date - timedelta(seconds=1)
 
     return maps
+
+
+def get_score(map_id: int, user_id: int) -> Score:
+    return API.beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
