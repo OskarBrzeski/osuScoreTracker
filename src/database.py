@@ -123,8 +123,11 @@ def create_score_table(cursor: sql.Cursor):
     )
 
 
-def _score_into_table_record(score: Score) -> tuple:
+def _score_into_table_record(score: Score | tuple[int, int]) -> tuple:
     """Convert `Score` object into record for sqlite table"""
+    if isinstance(score, tuple):
+        return (0, score[0], score[1], 0, 0.0, 0, 0, 0, 0.0)
+    
     return (
         score.id,
         score.user_id,
@@ -162,7 +165,7 @@ def add_score(cursor: sql.Cursor, values: tuple) -> None:
 
 
 @auto_connection
-def remove_all_maps(cursor: sql.Cursor) -> None:
+def remove_all_scores(cursor: sql.Cursor) -> None:
     """Remove all scores from table `scores`"""
     cursor.execute(
         """
@@ -171,7 +174,7 @@ def remove_all_maps(cursor: sql.Cursor) -> None:
     )
 
 
-def fill_score_table(scores: list[Score]) -> None:
+def fill_score_table(scores: list[Score | tuple[int, int]]) -> None:
     """Add score data to table `scores`"""
     for s in scores:
         add_score(_score_into_table_record(s))

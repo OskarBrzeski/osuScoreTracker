@@ -40,5 +40,8 @@ def get_all_leaderboard_maps(
     return maps
 
 
-def get_score(map_id: int, user_id: int) -> Score:
-    return API.beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
+def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
+    try:
+        return API.beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
+    except ValueError:
+        return (user_id, map_id)
