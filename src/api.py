@@ -27,7 +27,7 @@ def get_all_leaderboard_maps(
     map_id_set: set[int] = set()
 
     while retrieved := API_V1.get_beatmaps(since=since):
-        sleep(0.3)
+        sleep(0.7)
         for map in retrieved:
             if map.beatmap_id in map_id_set:
                 continue
@@ -43,8 +43,7 @@ def get_all_leaderboard_maps(
 
 
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
-    sleep(0.3)
-    print(f"map id: {map_id}")
+    sleep(0.7)
     try:
         return API.beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
     except ValueError:
