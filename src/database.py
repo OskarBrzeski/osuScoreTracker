@@ -111,7 +111,7 @@ def create_score_table(cursor: sql.Cursor):
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS scores (
-            score_id INTEGER PRIMARY KEY,
+            score_id INTEGER,
             user_id INTEGER,
             map_id INTEGER,
             score INTEGER,
@@ -119,7 +119,8 @@ def create_score_table(cursor: sql.Cursor):
             max_combo INTEGER,
             mods INTEGER,
             submit_time INTEGER,
-            pp REAL
+            pp REAL,
+            PRIMARY KEY (user_id, map_id)
         );
     """
     )
@@ -158,12 +159,13 @@ def add_score(cursor: sql.Cursor, values: tuple) -> None:
     """Add scroe details to table `scores`"""
     cursor.execute(
         """
-        INSERT INTO scores VALUES (
+        INSERT OR IGNORE INTO scores VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?
         );
         """,
         values,
     )
+    print(f"Added map_id: {values[2]}, score: {values[3]}")
 
 
 @auto_connection
