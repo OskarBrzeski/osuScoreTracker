@@ -165,7 +165,6 @@ def add_score(cursor: sql.Cursor, values: tuple) -> None:
         """,
         values,
     )
-    print(f"Added map_id: {values[2]}, score: {values[3]}")
 
 
 @auto_connection
