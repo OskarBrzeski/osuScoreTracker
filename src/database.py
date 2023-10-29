@@ -196,7 +196,7 @@ def export_scores_as_csv(cursor: sql.Cursor, user_id: int) -> None:
     if not os.path.isdir("export"):
         os.mkdir("export")
 
-    with open("export/scores.csv", "w", newline="") as file:
+    with open(f"export/scores-{user_id}.csv", "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerows(scores)
 
