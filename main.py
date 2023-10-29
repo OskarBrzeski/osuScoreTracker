@@ -4,4 +4,5 @@ import src.api as api
 import src.database as db
 
 if __name__ == "__main__":
-    db.export_scores_as_csv(7051163)
+    db.remove_all_scores()
+    db.import_scores_from_csv("export/scores.csv")

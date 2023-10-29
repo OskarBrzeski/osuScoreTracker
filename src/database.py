@@ -199,3 +199,11 @@ def export_scores_as_csv(cursor: sql.Cursor, user_id: int) -> None:
     with open("export/scores.csv", "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerows(scores)
+
+
+def import_scores_from_csv(csv_path: str) -> None:
+    """Adds scores from csv file into database."""
+    with open(csv_path) as file:
+        reader = csv.reader(file)
+        for row in reader:
+            add_score(tuple(row))
