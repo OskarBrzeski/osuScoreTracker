@@ -4,3 +4,4 @@ user_ids.txt
 
 .venv/
 __pycache__/
+export/

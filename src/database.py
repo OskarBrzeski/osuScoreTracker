@@ -1,3 +1,5 @@
+import csv
+import os
 import sqlite3 as sql
 
 from ossapi import Score
@@ -104,7 +106,7 @@ def fill_map_table(maps: list[BeatmapV1]) -> None:
 @auto_connection
 def create_score_table(cursor: sql.Cursor):
     """Create the table `scores` with all the relevant columns.
-    
+
     Changes should also be made to _score_into_table_record()"""
     cursor.execute(
         """
@@ -127,7 +129,7 @@ def _score_into_table_record(score: Score | tuple[int, int]) -> tuple:
     """Convert `Score` object into record for sqlite table"""
     if isinstance(score, tuple):
         return (0, score[0], score[1], 0, 0.0, 0, 0, 0, 0.0)
-    
+
     return (
         score.id,
         score.user_id,
@@ -178,3 +180,22 @@ def fill_score_table(scores: list[Score | tuple[int, int]]) -> None:
     """Add score data to table `scores`"""
     for s in scores:
         add_score(_score_into_table_record(s))
+
+
+@auto_connection
+def export_scores_as_csv(cursor: sql.Cursor, user_id: int) -> None:
+    """Creates a CSV file with all stored scores of particular player."""
+    scores = cursor.execute(
+        """
+        SELECT * FROM scores
+        WHERE user_id = ?;
+        """,
+        (user_id,),
+    ).fetchall()
+
+    if not os.path.isdir("export"):
+        os.mkdir("export")
+
+    with open("export/scores.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(scores)
