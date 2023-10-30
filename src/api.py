@@ -65,6 +65,7 @@ def get_all_leaderboard_maps(
 _limited_beatmap_user_score = rate_limit(API.beatmap_user_score)
 
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
+    """Retrieves a user's best score on a beatmap."""
     try:
         return _limited_beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
     except ValueError as e:
