@@ -79,7 +79,7 @@ def add_map(cursor: sql.Cursor, values: tuple) -> None:
     """Add map details to table `maps`"""
     cursor.execute(
         """
-        INSERT INTO maps VALUES (
+        INSERT OR IGNORE INTO maps VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         );
         """,

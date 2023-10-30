@@ -40,7 +40,7 @@ def rate_limit(func):
 _limited_get_beatmaps = rate_limit(API_V1.get_beatmaps)
 
 
-def get_all_leaderboard_maps(
+def get_leaderboard_maps(
     since: datetime = datetime(2007, 1, 1, tzinfo=timezone.utc),
     upto: datetime = datetime.now(timezone.utc) + timedelta(days=1),
 ) -> list[BeatmapV1]:
