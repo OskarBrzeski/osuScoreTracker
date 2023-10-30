@@ -22,6 +22,7 @@ last_call_time = time()
 
 def rate_limit(func):
     """Decorator for rate limiting api calls."""
+
     def wrapper(*args, **kwargs):
         global last_call_time
 
@@ -37,6 +38,7 @@ def rate_limit(func):
 
 
 _limited_get_beatmaps = rate_limit(API_V1.get_beatmaps)
+
 
 def get_all_leaderboard_maps(
     since: datetime = datetime(2007, 1, 1, tzinfo=timezone.utc),
@@ -63,6 +65,7 @@ def get_all_leaderboard_maps(
 
 
 _limited_beatmap_user_score = rate_limit(API.beatmap_user_score)
+
 
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
     """Retrieves a user's best score on a beatmap."""
