@@ -50,6 +50,8 @@ def get_all_leaderboard_maps(
     map_id_set: set[int] = set()
 
     while retrieved := _limited_get_beatmaps(since=since):
+        prev_len = len(maps)
+
         for map in retrieved:
             if map.beatmap_id in map_id_set:
                 continue
@@ -59,7 +61,11 @@ def get_all_leaderboard_maps(
             maps.append(map)
             map_id_set.add(map.beatmap_id)
 
+        if len(maps) == prev_len:
+            break
+
         since = maps[-1].approved_date - timedelta(seconds=1)
+        print(f"Retrieved maps up to {since}")
 
     return maps
 
