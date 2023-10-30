@@ -34,4 +34,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    maps = api.get_all_leaderboard_maps(upto=datetime(2008, 3, 1, tzinfo=timezone.utc))
+
+    for m in maps:
+        api.get_score(m.beatmap_id, 7051163)

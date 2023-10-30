@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
-from time import sleep
+from time import time
 from typing import Final
 
 from dotenv import load_dotenv
@@ -17,6 +17,27 @@ API_V1 = OssapiV1(API_LEGACY_KEY)
 API = Ossapi(API_CLIENT_ID, API_CLIENT_SECRET)
 
 
+last_call_time = time()
+
+
+def rate_limit(func):
+    """Decorator for rate limiting api calls."""
+    def wrapper(*args, **kwargs):
+        global last_call_time
+
+        while time() - last_call_time < 1:
+            continue
+
+        last_call_time = time()
+        result = func(*args, **kwargs)
+
+        return result
+
+    return wrapper
+
+
+_limited_get_beatmaps = rate_limit(API_V1.get_beatmaps)
+
 def get_all_leaderboard_maps(
     since: datetime = datetime(2007, 1, 1, tzinfo=timezone.utc),
     upto: datetime = datetime.now(timezone.utc) + timedelta(days=1),
@@ -26,8 +47,7 @@ def get_all_leaderboard_maps(
     maps: list[BeatmapV1] = []
     map_id_set: set[int] = set()
 
-    while retrieved := API_V1.get_beatmaps(since=since):
-        sleep(0.7)
+    while retrieved := _limited_get_beatmaps(since=since):
         for map in retrieved:
             if map.beatmap_id in map_id_set:
                 continue
@@ -42,9 +62,10 @@ def get_all_leaderboard_maps(
     return maps
 
 
+_limited_beatmap_user_score = rate_limit(API.beatmap_user_score)
+
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
-    sleep(0.7)
     try:
-        return API.beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
-    except ValueError:
+        return _limited_beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
+    except ValueError as e:
         return (user_id, map_id)
