@@ -79,3 +79,10 @@ def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
         return _limited_beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
     except ValueError as e:
         return (user_id, map_id)
+
+
+_limited_user = rate_limit(API.user)
+
+
+def user_exists(user_id: int) -> bool:
+    return _limited_user(user_id).id == user_id
