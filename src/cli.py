@@ -2,6 +2,11 @@ import src.api as api
 import src.database as db
 
 
+def main() -> None:
+    start()
+    show_options()
+
+
 def start() -> None:
     print("=====================")
     print("    SCORE TRACKER    ")
@@ -16,7 +21,9 @@ def show_options() -> None:
     response = get_input(["1", "2", "3"])
 
     if response == "1":
-        ...
+        db.create_map_table()
+        maps = api.get_leaderboard_maps()
+        db.fill_map_table(maps)
     elif response == "2":
         ...
     elif response == "3":
