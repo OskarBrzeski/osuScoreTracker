@@ -34,14 +34,14 @@ def get_input(options: list[str]) -> str:
     while response := input("Choose option: "):
         if response in options:
             return response
-        
+
         print("Please enter valid value.")
 
 
 def get_user_id() -> int:
     while True:
         result = input("Enter user ID: ")
-        
+
         if not result.isnumeric():
             print(f"ERROR: {repr(result)} is not an integer.")
         elif int(result) < 1:

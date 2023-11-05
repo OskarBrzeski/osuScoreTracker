@@ -4,7 +4,7 @@ from time import time
 from typing import Callable, Final, Type
 
 from dotenv import load_dotenv
-from ossapi import BeatmapUserScore, GameMode, Ossapi, OssapiV1, Score
+from ossapi import BeatmapUserScore, GameMode, Ossapi, OssapiV1, Score, User
 from ossapi.ossapi import Beatmap as BeatmapV1
 
 load_dotenv(".env")
@@ -20,7 +20,7 @@ API = Ossapi(API_CLIENT_ID, API_CLIENT_SECRET)
 last_call_time = time()
 
 
-def rate_limit(func: Callable[...], return_type: Type) -> Callable[...]:
+def rate_limit(func: Callable, return_type: Type) -> Callable:
     """Decorator for rate limiting api calls."""
 
     def wrapper(*args, **kwargs) -> return_type:
@@ -72,7 +72,9 @@ def get_leaderboard_maps(
     return maps
 
 
-_limited_beatmap_user_score = rate_limit(API.beatmap_user_score, return_type=BeatmapUserScore)
+_limited_beatmap_user_score = rate_limit(
+    API.beatmap_user_score, return_type=BeatmapUserScore
+)
 
 
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
@@ -83,7 +85,7 @@ def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
         return (user_id, map_id)
 
 
-_limited_user = rate_limit(API.user)
+_limited_user = rate_limit(API.user, return_type=User)
 
 
 def user_exists(user_id: int) -> bool:
