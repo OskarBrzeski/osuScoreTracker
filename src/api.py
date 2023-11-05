@@ -1,10 +1,10 @@
 import os
 from datetime import datetime, timedelta, timezone
 from time import time
-from typing import Final
+from typing import Callable, Final, Type
 
 from dotenv import load_dotenv
-from ossapi import GameMode, Ossapi, OssapiV1, Score
+from ossapi import BeatmapUserScore, GameMode, Ossapi, OssapiV1, Score
 from ossapi.ossapi import Beatmap as BeatmapV1
 
 load_dotenv(".env")
@@ -20,10 +20,10 @@ API = Ossapi(API_CLIENT_ID, API_CLIENT_SECRET)
 last_call_time = time()
 
 
-def rate_limit(func):
+def rate_limit(func: Callable[...], return_type: Type) -> Callable[...]:
     """Decorator for rate limiting api calls."""
 
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> return_type:
         global last_call_time
 
         while time() - last_call_time < 1:
@@ -37,7 +37,7 @@ def rate_limit(func):
     return wrapper
 
 
-_limited_get_beatmaps = rate_limit(API_V1.get_beatmaps)
+_limited_get_beatmaps = rate_limit(API_V1.get_beatmaps, return_type=list[BeatmapV1])
 
 
 def get_leaderboard_maps(
@@ -55,6 +55,8 @@ def get_leaderboard_maps(
         for map in retrieved:
             if map.beatmap_id in map_id_set:
                 continue
+            if map.mode != 0:
+                continue
             if map.approved_date > upto:
                 return maps
 
@@ -65,12 +67,12 @@ def get_leaderboard_maps(
             break
 
         since = maps[-1].approved_date - timedelta(seconds=1)
-        print(f"Retrieved maps up to {since}")
+        print(f"Retrieved maps up to {since}: {len(maps)}")
 
     return maps
 
 
-_limited_beatmap_user_score = rate_limit(API.beatmap_user_score)
+_limited_beatmap_user_score = rate_limit(API.beatmap_user_score, return_type=BeatmapUserScore)
 
 
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
