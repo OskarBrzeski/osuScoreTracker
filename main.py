@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import src.api as api
 import src.database as db
+import src.cli as cli
 
 
 def get_integer_input():
@@ -19,8 +20,8 @@ def get_integer_input():
 def main():
     user_id = get_integer_input()
 
-    ranked_maps = api.get_all_leaderboard_maps(
-        upto=datetime(2008, 1, 1, tzinfo=timezone.utc)
+    ranked_maps = api.get_leaderboard_maps(
+        upto=datetime(2024, 1, 1, tzinfo=timezone.utc)
     )
 
     ranked_maps = [map for map in ranked_maps if map.approved in ["1", "2"]]
@@ -28,13 +29,12 @@ def main():
     for i, map in enumerate(ranked_maps):
         score = api.get_score(map.beatmap_id, user_id)
         db.add_score(db._score_into_table_record(score))
-        print(f"Progress: {i}/{len(ranked_maps)}")
+        print(
+            f"Progress: {i}/{len(ranked_maps)} | Time remaining {timedelta(seconds=len(ranked_maps)-i)}"
+        )
 
     db.export_scores_as_csv(user_id)
 
 
 if __name__ == "__main__":
-    maps = api.get_all_leaderboard_maps(upto=datetime(2008, 3, 1, tzinfo=timezone.utc))
-
-    for m in maps:
-        api.get_score(m.beatmap_id, 7051163)
+    cli.main()
