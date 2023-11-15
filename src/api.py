@@ -1,7 +1,8 @@
 import os
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 from time import time
-from typing import Callable, Final, Type
+from typing import Callable, Final
 
 from dotenv import load_dotenv
 from ossapi import BeatmapUserScore, GameMode, Ossapi, OssapiV1, Score, User
@@ -20,10 +21,11 @@ API = Ossapi(API_CLIENT_ID, API_CLIENT_SECRET)
 last_call_time = time()
 
 
-def rate_limit(func: Callable, return_type: Type) -> Callable:
+def rate_limit(func: Callable) -> Callable:
     """Decorator for rate limiting api calls."""
 
-    def wrapper(*args, **kwargs) -> return_type:
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         global last_call_time
 
         while time() - last_call_time < 1:
@@ -37,7 +39,10 @@ def rate_limit(func: Callable, return_type: Type) -> Callable:
     return wrapper
 
 
-_limited_get_beatmaps = rate_limit(API_V1.get_beatmaps, return_type=list[BeatmapV1])
+@rate_limit
+def _get_beatmaps(since: datetime) -> list[BeatmapV1]:
+    """Rate-limited variant of `Ossapi.get_beatmaps`."""
+    return API_V1.get_beatmaps(since=since)
 
 
 def get_leaderboard_maps(
@@ -49,7 +54,7 @@ def get_leaderboard_maps(
     maps: list[BeatmapV1] = []
     map_id_set: set[int] = set()
 
-    while retrieved := _limited_get_beatmaps(since=since):
+    while retrieved := _get_beatmaps(since=since):
         prev_len = len(maps)
 
         for map in retrieved:
@@ -72,21 +77,25 @@ def get_leaderboard_maps(
     return maps
 
 
-_limited_beatmap_user_score = rate_limit(
-    API.beatmap_user_score, return_type=BeatmapUserScore
-)
+@rate_limit
+def _beatmap_user_score(map_id: int, user_id: int, mode: GameMode) -> BeatmapUserScore:
+    """Rate-limited variant of `Ossapi.beatmap_user_score`."""
+    return API.beatmap_user_score(map_id, user_id, mode=mode)
 
 
 def get_score(map_id: int, user_id: int) -> Score | tuple[int, int]:
     """Retrieves a user's best score on a beatmap."""
     try:
-        return _limited_beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
+        return _beatmap_user_score(map_id, user_id, mode=GameMode.OSU).score
     except ValueError as e:
         return (user_id, map_id)
 
 
-_limited_user = rate_limit(API.user, return_type=User)
+@rate_limit
+def _user(user_id: int) -> User:
+    """Rate-limited variant of `Ossapi.user`."""
+    return API.user(user_id)
 
 
 def user_exists(user_id: int) -> bool:
-    return _limited_user(user_id).id == user_id
+    return _user(user_id).id == user_id
