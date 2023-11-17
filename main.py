@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
 import src.api as api
-import src.database as db
 import src.cli as cli
+import src.database as db
 
 
 def get_integer_input():

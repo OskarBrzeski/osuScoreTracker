@@ -1,14 +1,18 @@
 import csv
 import os
 import sqlite3 as sql
+from datetime import datetime, timezone
+from functools import wraps
+from typing import Callable
 
 from ossapi import Score
 from ossapi.ossapi import Beatmap as BeatmapV1
 
 
-def auto_connection(func):
+def auto_connection(func: Callable) -> Callable:
     """Decorator for automating the connection to the database."""
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         connection = sql.connect("database.sqlite")
         try:
@@ -36,6 +40,7 @@ def create_map_table(cursor: sql.Cursor) -> None:
             map_id INTEGER PRIMARY KEY,
             set_id INTEGER,
             ranked_time INTEGER,
+            ranked_type INTEGER,
             artist TEXT,
             title TEXT,
             diff_name TEXT,
@@ -54,6 +59,7 @@ def _beatmapv1_into_table_record(beatmap: BeatmapV1) -> tuple:
         beatmap.beatmap_id,
         beatmap.beatmapset_id,
         int(beatmap.approved_date.timestamp()),
+        beatmap.approved,
         beatmap.artist,
         beatmap.title,
         beatmap.version,
@@ -80,7 +86,7 @@ def add_map(cursor: sql.Cursor, values: tuple) -> None:
     cursor.execute(
         """
         INSERT OR IGNORE INTO maps VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         );
         """,
         values,
@@ -101,6 +107,33 @@ def fill_map_table(maps: list[BeatmapV1]) -> None:
     """Add beatmap data to table `maps`"""
     for m in maps:
         add_map(_beatmapv1_into_table_record(m))
+
+
+@auto_connection
+def get_latest_leaderboard_map(cursor: sql.Cursor) -> datetime:
+    """Get the datetime of the latest leaderboard map in the `maps` table"""
+    timestamp = cursor.execute(
+        """
+        SELECT ranked_time FROM maps
+        ORDER BY ranked_time DESC LIMIT 1;
+        """
+    ).fetchone()[0]
+
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+
+
+@auto_connection
+def get_latest_ranked_map(cursor: sql.Cursor) -> datetime:
+    """Get the datetime of the latest leaderboard map in the `maps` table"""
+    timestamp = cursor.execute(
+        """
+        SELECT ranked_time FROM maps
+        WHERE ranked_type = 1 OR ranked_type = 2
+        ORDER BY ranked_time DESC LIMIT 1;
+        """
+    ).fetchone()[0]
+
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
 
 @auto_connection

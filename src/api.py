@@ -62,6 +62,8 @@ def get_leaderboard_maps(
                 continue
             if map.mode != 0:
                 continue
+            if map.approved not in ["1", "2", "4"]:
+                continue
             if map.approved_date > upto:
                 return maps
 
