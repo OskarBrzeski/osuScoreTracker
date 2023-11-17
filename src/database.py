@@ -105,8 +105,10 @@ def remove_all_maps(cursor: sql.Cursor) -> None:
 
 def fill_map_table(maps: list[BeatmapV1]) -> None:
     """Add beatmap data to table `maps`"""
-    for m in maps:
-        add_map(_beatmapv1_into_table_record(m))
+    for i in range(len(maps) // 1000 + 2):
+        for m in maps[i*1000:(i+1)*1000]:
+            add_map(_beatmapv1_into_table_record(m))
+        print(f"{min(i * 1000, len(maps))} maps added to database")
 
 
 @auto_connection
