@@ -105,10 +105,10 @@ def remove_all_maps(cursor: sql.Cursor) -> None:
 
 def fill_map_table(maps: list[BeatmapV1]) -> None:
     """Add beatmap data to table `maps`"""
-    for i in range(len(maps) // 1000 + 2):
-        for m in maps[i*1000:(i+1)*1000]:
+    for i in range(len(maps) // 1000 + 1):
+        for m in maps[i * 1000 : (i + 1) * 1000]:
             add_map(_beatmapv1_into_table_record(m))
-        print(f"{min(i * 1000, len(maps))} maps added to database")
+        print(f"{min((i+1) * 1000, len(maps))} maps added to database")
 
 
 @auto_connection
@@ -136,6 +136,41 @@ def get_latest_ranked_map(cursor: sql.Cursor) -> datetime:
     ).fetchone()[0]
 
     return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+
+
+@auto_connection
+def get_all_map_ids_without_score(cursor: sql.Cursor) -> list[int]:
+    map_ids = cursor.execute(
+        """
+        SELECT map_id FROM maps;
+        """
+    ).fetchall()
+
+    score_map_ids = cursor.execute(
+        """
+        SELECT map_id FROM scores
+        WHERE score > 0;
+        """
+    ).fetchall()
+
+    difference = set(row[0] for row in map_ids) - set(row[0] for row in score_map_ids)
+    return sorted(list(difference))
+
+
+@auto_connection
+def get_map_ids_for_year(cursor: sql.Cursor, year: int) -> list[int]:
+    year_timestamp = int(datetime(year, 1, 1).timestamp())
+    next_year_timestamp = int(datetime(year + 1, 1, 1).timestamp())
+    map_ids = cursor.execute(
+        """
+        SELECT map_id FROM maps
+        WHERE ranked_time BETWEEN ? AND ?
+        ORDER BY map_id ASC;
+        """,
+        (year_timestamp, next_year_timestamp - 1),
+    ).fetchall()
+
+    return [row[0] for row in map_ids]
 
 
 @auto_connection
@@ -216,6 +251,18 @@ def fill_score_table(scores: list[Score | tuple[int, int]]) -> None:
     """Add score data to table `scores`"""
     for s in scores:
         add_score(_score_into_table_record(s))
+
+
+@auto_connection
+def get_score_count(cursor: sql.Cursor) -> int:
+    result = cursor.execute(
+        """
+        SELECT COUNT(*) FROM scores
+        WHERE score > 0;
+        """
+    ).fetchone()
+
+    return result[0]
 
 
 @auto_connection
