@@ -174,6 +174,17 @@ def get_map_ids_for_year(cursor: sql.Cursor, year: int) -> list[int]:
 
 
 @auto_connection
+def get_map_count(cursor: sql.Cursor) -> int:
+    result = cursor.execute(
+        """
+        SELECT COUNT(*) FROM maps;
+        """
+    ).fetchone()
+
+    return result[0]
+
+
+@auto_connection
 def create_score_table(cursor: sql.Cursor):
     """Create the table `scores` with all the relevant columns.
 

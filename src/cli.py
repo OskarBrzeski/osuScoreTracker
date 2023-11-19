@@ -8,7 +8,8 @@ def main() -> None:
     initialise_database()
     user_id = start()
     print()
-    show_options(user_id)
+    while show_options(user_id) != "QUIT":
+        continue
 
 
 def initialise_database() -> None:
@@ -28,8 +29,9 @@ def show_options(user_id: int) -> None:
     print("2. Get scores on all maps in database")
     print("3. Export scores into CSV file")
     print("4. Show stats")
+    print("5. Quit")
     print()
-    response = get_input(["1", "2", "3", "4"])
+    response = get_input(["1", "2", "3", "4", "5"])
     print()
 
     if response == "1":
@@ -39,7 +41,11 @@ def show_options(user_id: int) -> None:
     elif response == "3":
         ...
     elif response == "4":
+        print(f"Maps in database: {db.get_map_count()}")
         print(f"Scores in database: {db.get_score_count()}")
+        print()
+    elif response == "5":
+        return "QUIT"
 
 
 def map_options() -> None:
