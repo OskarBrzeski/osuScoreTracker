@@ -185,6 +185,18 @@ def get_map_count(cursor: sql.Cursor) -> int:
 
 
 @auto_connection
+def get_ranked_map_count(cursor: sql.Cursor) -> int:
+    result = cursor.execute(
+        """
+        SELECT COUNT(*) FROM maps
+        WHERE ranked_type BETWEEN 1 AND 2;
+        """
+    ).fetchone()
+
+    return result[0]
+
+
+@auto_connection
 def create_score_table(cursor: sql.Cursor):
     """Create the table `scores` with all the relevant columns.
 

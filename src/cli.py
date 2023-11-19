@@ -39,9 +39,9 @@ def show_options(user_id: int) -> None:
     elif response == "2":
         score_options(user_id)
     elif response == "3":
-        ...
+        db.export_scores_as_csv(user_id)
     elif response == "4":
-        print(f"Maps in database: {db.get_map_count()}")
+        print(f"Maps in database: {db.get_map_count()} | {db.get_ranked_map_count()}")
         print(f"Scores in database: {db.get_score_count()}")
         print()
     elif response == "5":
@@ -107,7 +107,7 @@ def score_options(user_id: int) -> None:
         i = 1
         while (now := datetime.now()) < end_time:
             print(f"Adding score for map {map_id[i-1]} | {end_time - now} remaining")
-            score = api.get_score(map_ids[i-1], user_id)
+            score = api.get_score(map_ids[i - 1], user_id)
             db.add_score(db._score_into_table_record(score))
         print("Finished adding scores to database")
     elif response == "3":
@@ -127,28 +127,28 @@ def score_options(user_id: int) -> None:
 def get_year() -> int:
     while True:
         response = input("Enter year: ")
-        
+
         if not response.isnumeric():
             print(f"ERROR: {repr(response)} is not an integer")
         elif int(response) < 2007 or int(response) > datetime.now().year:
             print(f"ERROR: {response} must be from 2007 to {datetime.now().year}")
         else:
             break
-    
+
     return int(response)
 
 
 def get_duration() -> timedelta:
     while True:
         response = input("Enter amount of minutes to get scores for: ")
-        
+
         if not response.isnumeric():
             print(f"ERROR: {repr(response)} is not an integer")
         elif int(response) < 1:
             print(f"ERROR: {response} must be 1 or greater")
         else:
             break
-    
+
     return timedelta(minutes=int(response))
 
 
