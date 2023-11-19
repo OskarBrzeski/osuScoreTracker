@@ -111,7 +111,12 @@ def score_options(user_id: int) -> None:
             db.add_score(db._score_into_table_record(score))
         print("Finished adding scores to database")
     elif response == "3":
-        ...
+        amount = get_positive_integer()
+        map_ids = db.get_all_map_ids_without_score()
+        for i in range(amount):
+            print(f"Adding score for map {map_ids[i]} | {i+1}/{amount}")
+            score = api.get_score(map_ids[i], user_id)
+            db.add_score(db._score_into_table_record(score))
     elif response == "4":
         year = get_year()
         map_ids = db.get_map_ids_for_year(year)
@@ -163,7 +168,7 @@ def get_input(options: list[str]) -> str:
 
 def get_user_id() -> int:
     while True:
-        result = input("Enter user ID: ")
+        result = input("Enter User ID: ")
 
         if not result.isnumeric():
             print(f"ERROR: {repr(result)} is not an integer.")
@@ -172,4 +177,18 @@ def get_user_id() -> int:
         else:
             break
 
-    return result
+    return int(result)
+
+
+def get_positive_integer() -> int:
+    while True:
+        result = input("Enter number: ")
+
+        if not result.isnumeric():
+            print(f"ERROR: {repr(result)} is not an integer.")
+        elif int(result) < 1:
+            print(f"ERROR: {result} must be 1 or greater.")
+        else:
+            break
+
+    return int(result)
