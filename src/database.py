@@ -158,6 +158,24 @@ def get_all_map_ids_without_score(cursor: sql.Cursor) -> list[int]:
 
 
 @auto_connection
+def get_all_map_ids_without_score_in_database(cursor: sql.Cursor) -> list[int]:
+    map_ids = cursor.execute(
+        """
+        SELECT map_id FROM maps;
+        """
+    ).fetchall()
+
+    score_map_ids = cursor.execute(
+        """
+        SELECT map_id FROM scores;
+        """
+    ).fetchall()
+
+    difference = set(row[0] for row in map_ids) - set(row[0] for row in score_map_ids)
+    return sorted(list(difference))
+
+
+@auto_connection
 def get_map_ids_for_year(cursor: sql.Cursor, year: int) -> list[int]:
     year_timestamp = int(datetime(year, 1, 1).timestamp())
     next_year_timestamp = int(datetime(year + 1, 1, 1).timestamp())

@@ -103,7 +103,7 @@ def score_options(user_id: int) -> None:
         duration = get_duration()
         starting_time = datetime.now()
         end_time = starting_time + duration
-        map_ids = db.get_all_map_ids_without_score()
+        map_ids = db.get_all_map_ids_without_score_in_database()
         i = 1
         while (now := datetime.now()) < end_time:
             print(f"Adding score for map {map_id[i-1]} | {end_time - now} remaining")
@@ -112,11 +112,12 @@ def score_options(user_id: int) -> None:
         print("Finished adding scores to database")
     elif response == "3":
         amount = get_positive_integer()
-        map_ids = db.get_all_map_ids_without_score()
+        map_ids = db.get_all_map_ids_without_score_in_database()
         for i in range(amount):
             print(f"Adding score for map {map_ids[i]} | {i+1}/{amount}")
             score = api.get_score(map_ids[i], user_id)
             db.add_score(db._score_into_table_record(score))
+        print("Finished adding scores to database")
     elif response == "4":
         year = get_year()
         map_ids = db.get_map_ids_for_year(year)
