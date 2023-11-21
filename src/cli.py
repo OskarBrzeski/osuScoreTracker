@@ -42,7 +42,9 @@ def show_options(user_id: int) -> None:
         db.export_scores_as_csv(user_id)
     elif response == "4":
         print(f"Maps in database: {db.get_map_count()} | {db.get_ranked_map_count()}")
-        print(f"Scores in database: {db.get_score_in_database_count()} | {db.get_score_count()}")
+        print(
+            f"Scores in database: {db.get_score_in_database_count()} | {db.get_score_count()}"
+        )
     elif response == "5":
         return "QUIT"
 

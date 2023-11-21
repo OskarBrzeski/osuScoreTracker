@@ -31,8 +31,17 @@ def rate_limit(func: Callable) -> Callable:
         while time() - last_call_time < 1:
             continue
 
-        last_call_time = time()
-        result = func(*args, **kwargs)
+        result = None
+        retries = 0
+        while result is None:
+            if retries > 10:
+                raise TimeoutError("Too many unsuccessful requests")
+            try:
+                last_call_time = time()
+                result = func(*args, **kwargs)
+            except ConnectionError:
+                retries += 1
+                print("Connection Error occured")
 
         return result
 
