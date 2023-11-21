@@ -7,7 +7,6 @@ import src.database as db
 def main() -> None:
     initialise_database()
     user_id = start()
-    print()
     while show_options(user_id) != "QUIT":
         continue
 
@@ -25,6 +24,7 @@ def start() -> int:
 
 
 def show_options(user_id: int) -> None:
+    print()
     print("1. Get all osu!std leaderboard maps into database")
     print("2. Get scores on all maps in database")
     print("3. Export scores into CSV file")
@@ -42,8 +42,7 @@ def show_options(user_id: int) -> None:
         db.export_scores_as_csv(user_id)
     elif response == "4":
         print(f"Maps in database: {db.get_map_count()} | {db.get_ranked_map_count()}")
-        print(f"Scores in database: {db.get_score_count()}")
-        print()
+        print(f"Scores in database: {db.get_score_in_database_count()} | {db.get_score_count()}")
     elif response == "5":
         return "QUIT"
 
@@ -106,9 +105,10 @@ def score_options(user_id: int) -> None:
         map_ids = db.get_all_map_ids_without_score_in_database()
         i = 1
         while (now := datetime.now()) < end_time:
-            print(f"Adding score for map {map_id[i-1]} | {end_time - now} remaining")
+            print(f"Adding score for map {map_ids[i-1]} | {end_time - now} remaining")
             score = api.get_score(map_ids[i - 1], user_id)
             db.add_score(db._score_into_table_record(score))
+            i += 1
         print("Finished adding scores to database")
     elif response == "3":
         amount = get_positive_integer()

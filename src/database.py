@@ -307,6 +307,17 @@ def get_score_count(cursor: sql.Cursor) -> int:
 
 
 @auto_connection
+def get_score_in_database_count(cursor: sql.Cursor) -> int:
+    result = cursor.execute(
+        """
+        SELECT COUNT(*) FROM scores;
+        """
+    ).fetchone()
+
+    return result[0]
+
+
+@auto_connection
 def export_scores_as_csv(cursor: sql.Cursor, user_id: int) -> None:
     """Creates a CSV file with all stored scores of particular player."""
     scores = cursor.execute(
