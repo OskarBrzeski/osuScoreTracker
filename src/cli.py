@@ -105,10 +105,10 @@ def score_options(user_id: int) -> None:
         starting_time = datetime.now()
         end_time = starting_time + duration
         map_ids = db.get_all_map_ids_without_score_in_database()
-        i = 1
-        while (now := datetime.now()) < end_time:
-            print(f"Adding score for map {map_ids[i-1]} | {end_time - now} remaining")
-            score = api.get_score(map_ids[i - 1], user_id)
+        i = 0
+        while (now := datetime.now()) < end_time and i < len(map_ids):
+            print(f"Adding score for map {map_ids[i]} | {end_time - now} remaining")
+            score = api.get_score(map_ids[i], user_id)
             db.add_score(db._score_into_table_record(score))
             i += 1
         print("Finished adding scores to database")
