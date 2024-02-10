@@ -19,8 +19,6 @@ API = Ossapi(API_CLIENT_ID, API_CLIENT_SECRET)
 
 
 last_call_time = time()
-
-
 def rate_limit(func: Callable) -> Callable:
     """Decorator for rate limiting api calls."""
 
@@ -50,7 +48,7 @@ def rate_limit(func: Callable) -> Callable:
 
 @rate_limit
 def _get_beatmaps(since: datetime) -> list[BeatmapV1]:
-    """Rate-limited variant of `Ossapi.get_beatmaps`."""
+    """Rate-limited variant of `OssapiV1.get_beatmaps`."""
     return API_V1.get_beatmaps(since=since)
 
 

@@ -239,6 +239,7 @@ def create_score_table(cursor: sql.Cursor):
 
 def _score_into_table_record(score: Score | tuple[int, int]) -> tuple:
     """Convert `Score` object into record for sqlite table"""
+    # tuple only used when there is no score on map
     if isinstance(score, tuple):
         return (0, score[0], score[1], 0, 0.0, 0, 0, 0, 0.0)
 

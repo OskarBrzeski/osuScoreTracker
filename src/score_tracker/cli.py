@@ -41,12 +41,14 @@ def show_options(user_id: int) -> None:
     elif response == "3":
         db.export_scores_as_csv(user_id)
     elif response == "4":
-        print(f"Maps in database: {db.get_map_count()} | {db.get_ranked_map_count()}")
-        print(
-            f"Scores in database: {db.get_score_in_database_count()} | {db.get_score_count()}"
-        )
+        show_stats()
     elif response == "5":
         return "QUIT"
+
+
+def show_stats():
+    print(f"Maps in database: {db.get_map_count()} | {db.get_ranked_map_count()}")
+    print(f"Scores in database: {db.get_score_in_database_count()} | {db.get_score_count()}")
 
 
 def map_options() -> None:
