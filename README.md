@@ -2,13 +2,15 @@
 
 ## How to use
 Make sure you have the required dependencies
-```py
+
+```powershell
 python -m venv .venv
-.venv/Scripts/activate
-pip install -r requirements.txt
+.venv\Scripts\Activate.ps1
+pip install -e .
 ```
-To start the script, run the following command in terminal:
+
+To start the CLI, run the following command in terminal:
+
+```powershell
+score-tracker
 ```
-python main.py
-```
-Alternatively, run main.py

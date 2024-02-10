@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-import src.api as api
-import src.database as db
+import score_tracker.api as api
+import score_tracker.database as db
 
 
 def main() -> None:

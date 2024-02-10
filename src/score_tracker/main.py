@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
-import src.api as api
-import src.cli as cli
-import src.database as db
+import score_tracker.api as api
+import score_tracker.cli as cli
+import score_tracker.database as db
 
 
 def get_integer_input():
