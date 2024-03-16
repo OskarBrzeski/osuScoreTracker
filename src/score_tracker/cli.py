@@ -1,7 +1,27 @@
 from datetime import datetime, timedelta
 
-import score_tracker.api as api
-import score_tracker.database as db
+# import score_tracker.api as api
+# import score_tracker.database as db
+
+from score_tracker.models.seed import create_map_table, create_score_table
+from score_tracker.models.maps import (
+    remove_all_maps,
+    get_map_count,
+    get_ranked_map_count,
+    get_latest_leaderboard_map,
+    get_latest_ranked_map,
+    get_all_map_ids_without_score,
+    get_all_map_ids_without_score_in_database,
+    get_map_ids_for_year,
+)
+from score_tracker.models.scores import (
+    get_score_in_database_count,
+    get_score_count,
+    add_score,
+    remove_all_scores,
+)
+from score_tracker.controllers.maps import get_leaderboard_maps, fill_map_table
+from score_tracker.controllers.scores import get_score
 
 
 def main() -> None:
@@ -12,8 +32,8 @@ def main() -> None:
 
 
 def initialise_database() -> None:
-    db.create_map_table()
-    db.create_score_table()
+    create_map_table()
+    create_score_table()
 
 
 def start() -> int:
@@ -39,7 +59,8 @@ def show_options(user_id: int) -> None:
     elif response == "2":
         score_options(user_id)
     elif response == "3":
-        db.export_scores_as_csv(user_id)
+        ...
+        # export_scores_as_csv(user_id)
     elif response == "4":
         show_stats()
     elif response == "5":
@@ -47,8 +68,8 @@ def show_options(user_id: int) -> None:
 
 
 def show_stats():
-    print(f"Maps in database: {db.get_map_count()} | {db.get_ranked_map_count()}")
-    print(f"Scores in database: {db.get_score_in_database_count()} | {db.get_score_count()}")
+    print(f"Maps in database: {get_map_count()} | {get_ranked_map_count()}")
+    print(f"Scores in database: {get_score_in_database_count()} | {get_score_count()}")
 
 
 def map_options() -> None:
@@ -62,27 +83,27 @@ def map_options() -> None:
     print()
 
     if response == "1":
-        db.remove_all_maps()
-        maps = api.get_leaderboard_maps()
-        db.fill_map_table(maps)
+        remove_all_maps()
+        maps = get_leaderboard_maps()
+        fill_map_table(maps)
     elif response == "2":
-        since = db.get_latest_leaderboard_map()
-        maps = api.get_leaderboard_maps(since=since)
-        db.fill_map_table(maps)
+        since = get_latest_leaderboard_map()
+        maps = get_leaderboard_maps(since=since)
+        fill_map_table(maps)
     elif response == "3":
-        db.remove_all_maps()
-        maps = [map for map in api.get_leaderboard_maps() if map.approved in ["1", "2"]]
-        db.fill_map_table(maps)
+        remove_all_maps()
+        maps = [map for map in get_leaderboard_maps() if map.approved in ["1", "2"]]
+        fill_map_table(maps)
     elif response == "4":
-        since = db.get_latest_ranked_map()
+        since = get_latest_ranked_map()
         maps = [
             map
-            for map in api.get_leaderboard_maps(since=since)
+            for map in get_leaderboard_maps(since=since)
             if map.approved in ["1", "2"]
         ]
-        db.fill_map_table(maps)
+        fill_map_table(maps)
     elif response == "5":
-        db.remove_all_maps()
+        remove_all_maps()
 
 
 def score_options(user_id: int) -> None:
@@ -96,42 +117,42 @@ def score_options(user_id: int) -> None:
     print()
 
     if response == "1":
-        map_ids = db.get_all_map_ids_without_score()
+        map_ids = get_all_map_ids_without_score()
         for i, map_id in enumerate(map_ids, start=1):
             print(f"Adding score for map {map_id} | {i}/{len(map_ids)}")
-            score = api.get_score(map_id, user_id)
-            db.add_score(db._score_into_table_record(score))
+            score = get_score(map_id, user_id)
+            add_score(score)
         print("Finished adding scores to database")
     elif response == "2":
         duration = get_duration()
         starting_time = datetime.now()
         end_time = starting_time + duration
-        map_ids = db.get_all_map_ids_without_score_in_database()
+        map_ids = get_all_map_ids_without_score_in_database()
         i = 0
         while (now := datetime.now()) < end_time and i < len(map_ids):
             print(f"Adding score for map {map_ids[i]} | {end_time - now} remaining")
-            score = api.get_score(map_ids[i], user_id)
-            db.add_score(db._score_into_table_record(score))
+            score = get_score(map_ids[i], user_id)
+            add_score(score)
             i += 1
         print("Finished adding scores to database")
     elif response == "3":
         amount = get_positive_integer()
-        map_ids = db.get_all_map_ids_without_score_in_database()
+        map_ids = get_all_map_ids_without_score_in_database()
         for i in range(amount):
             print(f"Adding score for map {map_ids[i]} | {i+1}/{amount}")
-            score = api.get_score(map_ids[i], user_id)
-            db.add_score(db._score_into_table_record(score))
+            score = get_score(map_ids[i], user_id)
+            add_score(score)
         print("Finished adding scores to database")
     elif response == "4":
         year = get_year()
-        map_ids = db.get_map_ids_for_year(year)
+        map_ids = get_map_ids_for_year(year)
         for i, map_id in enumerate(map_ids, start=1):
             print(f"Adding score for map {map_id} | {i}/{len(map_ids)}")
-            score = api.get_score(map_id, user_id)
-            db.add_score(db._score_into_table_record(score))
+            score = get_score(map_id, user_id)
+            add_score(score)
         print("Finished adding scores to database")
     elif response == "5":
-        db.remove_all_scores()
+        remove_all_scores()
 
 
 def get_year() -> int:
