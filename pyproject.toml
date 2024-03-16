@@ -5,7 +5,7 @@ readme = "README.md"
 license = { text = "MIT License" }
 authors = [{name = "Oskar Brzeski", email = "oskar.brzeski.github@hotmail.com"}]
 version = "2024.02.10"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "ossapi==3.4.1",
     "python-dotenv==1.0.0",
