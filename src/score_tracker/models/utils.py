@@ -3,12 +3,14 @@ from functools import wraps
 from typing import Callable
 
 from ossapi.ossapi import Beatmap as BeatmapV1
-from ossapi.ossapi import Score
+from ossapi.models import Score
+
+type BeatmapTuple = tuple[int, int, int, int, str, str, str, str, int, float, int]
+type ScoreTuple = tuple[int, int, int, int, float, int, int, int, float]
 
 
 def auto_connection(func: Callable) -> Callable:
     """Decorator for automating the connection to the database."""
-
     @wraps(func)
     def wrapper(*args, **kwargs):
         connection = sql.connect("database.sqlite")
@@ -26,7 +28,7 @@ def auto_connection(func: Callable) -> Callable:
     return wrapper
 
 
-def beatmapv1_into_table_record(beatmap: BeatmapV1) -> tuple:
+def beatmapv1_into_table_record(beatmap: BeatmapV1) -> BeatmapTuple:
     """Convert `Beatmap` object into record for sqlite table"""
     return (
         beatmap.beatmap_id,
@@ -43,11 +45,11 @@ def beatmapv1_into_table_record(beatmap: BeatmapV1) -> tuple:
     )
 
 
-def score_into_table_record(score: Score | tuple[int, int]) -> tuple:
+def score_into_table_record(score: Score | tuple[int, int]) -> ScoreTuple:
     """Convert `Score` object into record for sqlite table"""
     # tuple only used when there is no score on map
     if isinstance(score, tuple):
-        return (0, score[0], score[1], 0, 0.0, 0, 0, 0, 0.0)
+        return 0, score[0], score[1], 0, 0.0, 0, 0, 0, 0.0
 
     return (
         score.id,
