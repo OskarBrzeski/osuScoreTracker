@@ -1,4 +1,4 @@
-# ScoreTracker
+# osuScoreTracker
 
 ## Install
 Make sure you have Python 3.12 or later.
