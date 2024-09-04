@@ -1,10 +1,10 @@
 [project]
-name = "ScoreTracker"
+name = "osuScoreTracker"
 description = "CLI tool to track osu! scores and make spreadsheets"
 readme = "README.md"
-license = { text = "MIT License" }
+license = {text = "MIT License"}
 authors = [{name = "Oskar Brzeski", email = "oskar.brzeski.github@hotmail.com"}]
-version = "2024.06.10"
+version = "2024.09.04"
 requires-python = ">=3.12"
 dependencies = [
     "ossapi==4.0.0",
@@ -17,3 +17,4 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 score-tracker = "score_tracker.cli:main"
+score-tracker-gui = "score_tracker.gui:main"

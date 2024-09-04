@@ -5,4 +5,4 @@ user_ids.txt
 .venv/
 __pycache__/
 export/
-src/ScoreTracker.egg-info/
+src/osuScoreTracker.egg-info/
