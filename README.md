@@ -18,6 +18,12 @@ python -m venv .venv
 pip install -e .
 ```
 
+Bash (Linux):
+```bash
+python -m venv .venv
+.venv/bin/activate
+```
+
 To start the CLI, run the following command in the terminal:
 ```powershell
 score-tracker
